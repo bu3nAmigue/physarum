@@ -118,6 +118,9 @@ let postprocess = new ShaderMaterial({
     uniforms: {
         data: {
             value: null
+        },
+        time: {
+            value: 0.0
         }
     },
     vertexShader: require('./src/glsl/quad_vs.glsl'),
@@ -142,6 +145,7 @@ function raf(){
     requestAnimationFrame(raf)
 
     time = (Date.now() - start) * 0.001
+
     
     trails.material.uniforms.points.value = render.texture
     trails.render( renderer, time )
@@ -151,7 +155,8 @@ function raf(){
     
     render.render( renderer, time )
     
-    postprocess_mesh.material.uniforms.data.value = trails.texture
+    postprocess_mesh.material.uniforms.data.value = render.texture
+    postprocess_mesh.material.uniforms.time.value = time
     renderer.setSize(w,h)
     renderer.clear()
     renderer.render(scene, camera)

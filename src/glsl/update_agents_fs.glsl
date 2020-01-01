@@ -53,12 +53,14 @@ void main(){
     vec2 uvFR=val.xy+vec2(cos(angle+SA),sin(angle+SA))*SO;
 
     //get the values unders the sensors 
-    float FL = getTrailValue(uvFL);
-    float F  = getTrailValue(uvF);
+    float F = getTrailValue(uvF);
+    float FL  = getTrailValue(uvFL);
     float FR = getTrailValue(uvFR);
 
     // original implement not very parallel friendly
     // TODO remove the conditions
+
+    /*
     if( F > FL && F > FR ){
     }else if( F<FL && F<FR ){
         if( rand(val.xy) > .5 ){
@@ -70,6 +72,23 @@ void main(){
             angle+=RA;
     }else if(FL>FR){
             angle-=RA;
+    }
+    */
+
+    float v = pow(RA,-0.0001);
+
+    if( F > FL && F > FR ){
+        angle *= -0.2;
+    }else if( F<FL && F<FR ){
+        if( FL < FR ){
+            angle +=v;
+        }else{
+            angle -=v;
+        }
+    }else if( FL<FR){
+            angle+=v;
+    }else if(FL>FR){
+            angle-=v;
     }
 
     vec2 offset = vec2(cos(angle),sin(angle)) * SS;
