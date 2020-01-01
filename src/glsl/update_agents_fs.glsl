@@ -75,10 +75,10 @@ void main(){
     }
     */
 
-    float v = pow(RA,-0.0001);
+    float v = RA;
 
     if( F > FL && F > FR ){
-        angle *= -0.2;
+        //angle *= -0.2;
     }else if( F<FL && F<FR ){
         if( FL < FR ){
             angle +=v;

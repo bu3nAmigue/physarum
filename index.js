@@ -10,19 +10,25 @@ import {
     PlaneBufferGeometry,
     ShaderMaterial,
     Vector2,
+    AudioListener,
+    Audio,
+    AudioAnalyser,
+    AudioLoader,
+    LuminanceFormat
 } from 'three';
 import PingpongRenderTarget from "./src/PingpongRenderTarget"
 import RenderTarget from "./src/RenderTarget"
 import dat from "dat.gui";
 import Controls from "./src/Controls";
 
+import soundfile from "./src/song.mp3"
 
 // 0 configure scene
 //////////////////////////////////////
 
 let w = window.innerWidth
 let h = window.innerHeight
-
+ 
 const renderer = new WebGLRenderer({
     alpha: true
 });
@@ -32,8 +38,53 @@ const scene = new Scene();
 const camera = new OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 0.1, 100);
 camera.position.z = 1
 
+
+// AUDIO
+
+var fftSize = 128;
+
+var listener = new AudioListener();
+/*
+var audio = new Audio( listener );
+
+navigator.mediaDevices.getUserMedia( { audio: true, video: false } ).then( handleSuccess );
+
+function handleSuccess( stream ) {
+
+    var audio = new Audio( listener );
+
+    var context = listener.context;
+    context.resume();
+    var source = context.createMediaStreamSource( stream );
+    audio.setNodeSource( source );
+
+}
+
+var analyser = new AudioAnalyser( audio, fftSize );
+
+*/
+
+// create an Audio source
+var sound = new Audio( listener );
+
+// load a sound and set it as the Audio object's buffer
+var audioLoader = new AudioLoader();
+audioLoader.load( soundfile, function( buffer ) {
+    sound.setBuffer( buffer );
+    sound.setLoop(true);
+    sound.setVolume(0.5);
+    sound.play();
+});
+
+// create an AudioAnalyser, passing in the sound and desired fftSize
+var analyser = new AudioAnalyser( sound, fftSize);
+
+// get the average frequency of the sound
+var data = analyser.getAverageFrequency();
+console.log(data)
 // 1 init buffers 
 //////////////////////////////////////
+
 
 let size = 512 // particles amount = ( size ^ 2 )
 
@@ -121,6 +172,9 @@ let postprocess = new ShaderMaterial({
         },
         time: {
             value: 0.0
+        },
+        tAudioData: {
+            value: new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )
         }
     },
     vertexShader: require('./src/glsl/quad_vs.glsl'),
@@ -152,11 +206,23 @@ function raf(){
     
     agents.material.uniforms.data.value = trails.texture
     agents.render(renderer, time)
-    
+    //agents.material.uniforms.ra.value.needsUpdate = true;
+    //agents.material.uniforms.ra.value = (new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[0]/1
+    //agents.material.uniforms.sa.value = (new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[10]/10
+    //agents.material.uniforms.so.value = (new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[20]/1
+    agents.material.uniforms.ss.value = 20 + Math.max(0,new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data[50]/1)
+    console.log((new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[50]/1)
     render.render( renderer, time )
     
     postprocess_mesh.material.uniforms.data.value = render.texture
     postprocess_mesh.material.uniforms.time.value = time
+
+    analyser.getFrequencyData();
+    //console.log(new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data)
+
+    //postprocess_mesh.material.uniforms.tAudioData.value = new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )
+    postprocess_mesh.material.uniforms.tAudioData.value.needsUpdate = true;
+
     renderer.setSize(w,h)
     renderer.clear()
     renderer.render(scene, camera)
@@ -188,4 +254,3 @@ gui.add(update_agents.uniforms.ss, "value", 0.1, 10, .1).name("ss")
 gui.add(controls, "random")
 gui.add(controls, "radius",.001,.25)
 gui.add(controls, "count", 1,size*size, 1)
-
