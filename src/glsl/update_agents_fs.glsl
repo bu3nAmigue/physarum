@@ -75,7 +75,7 @@ void main(){
     }
     */
 
-    float v = RA;
+    float v = pow(RA,-0.0001);
 
     if( F > FL && F > FR ){
         //angle *= -0.2;

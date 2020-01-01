@@ -210,7 +210,9 @@ function raf(){
     //agents.material.uniforms.ra.value = (new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[0]/1
     //agents.material.uniforms.sa.value = (new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[10]/10
     //agents.material.uniforms.so.value = (new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[20]/1
-    agents.material.uniforms.ss.value = 20 + Math.max(0,new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data[50]/1)
+    agents.material.uniforms.ra.value = 60 + Math.min(Math.max(0,new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),60*0.25)
+    agents.material.uniforms.sa.value = 60 + Math.min(Math.max(0,new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),60*0.25)
+    agents.material.uniforms.ss.value = 2 + Math.min(Math.max(0,new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),10)
     console.log((new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[50]/1)
     render.render( renderer, time )
     
