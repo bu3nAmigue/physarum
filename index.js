@@ -36,55 +36,61 @@ document.body.appendChild(renderer.domElement);
 renderer.setSize(w, h);
 const scene = new Scene();
 const camera = new OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 0.1, 100);
-camera.position.z = 1
+camera.position.z = 1;
+
+// AUDIO MIC
+
+var laposta = {"cosa": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "inicial":true};
+var fftSize = 127;
+window.onload = function () {
+    "use strict";
+    var AudioContext;
+    var audioContent;
+    var path;
+
+    AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioContent = new AudioContext();
 
 
-// AUDIO
+    var soundNotAllowed = function (error) {
+        h.innerHTML = "You must allow your microphone.";
+        console.log(error);
+    }
 
-var fftSize = 128;
+    var soundAllowed = function (stream) {
+        var audioStream = audioContent.createMediaStreamSource( stream );
+        var analyser = audioContent.createAnalyser();
+        var fftSize = 1024;
 
-var listener = new AudioListener();
-/*
-var audio = new Audio( listener );
+        analyser.fftSize = fftSize;
+        audioStream.connect(analyser);
 
-navigator.mediaDevices.getUserMedia( { audio: true, video: false } ).then( handleSuccess );
+        laposta["cosa"] = analyser;
+        laposta.inicial = false;
+              
+    }
 
-function handleSuccess( stream ) {
+    navigator.mediaDevices.getUserMedia({audio:true})
+        .then(soundAllowed)
+        .catch(soundNotAllowed);
 
-    var audio = new Audio( listener );
+};
 
-    var context = listener.context;
-    context.resume();
-    var source = context.createMediaStreamSource( stream );
-    audio.setNodeSource( source );
-
+var dameData = function () {
+    if(laposta.inicial) return laposta.cosa;
+    var bufferLength = laposta.cosa.frequencyBinCount;
+    var frequencyArray = new Uint8Array(bufferLength);
+    laposta.cosa.getByteFrequencyData(frequencyArray);
+    var mean = 0.0;
+    for (var i = 0; i < frequencyArray.length; i++){
+        mean+=frequencyArray[i];
+    }
+    mean = mean/frequencyArray.length;
+    return frequencyArray;
 }
 
-var analyser = new AudioAnalyser( audio, fftSize );
-
-*/
-
-// create an Audio source
-var sound = new Audio( listener );
-
-// load a sound and set it as the Audio object's buffer
-var audioLoader = new AudioLoader();
-audioLoader.load( soundfile, function( buffer ) {
-    sound.setBuffer( buffer );
-    sound.setLoop(true);
-    sound.setVolume(0.5);
-    sound.play();
-});
-
-// create an AudioAnalyser, passing in the sound and desired fftSize
-var analyser = new AudioAnalyser( sound, fftSize);
-
-// get the average frequency of the sound
-var data = analyser.getAverageFrequency();
-console.log(data)
 // 1 init buffers 
 //////////////////////////////////////
-
 
 let size = 512 // particles amount = ( size ^ 2 )
 
@@ -174,7 +180,7 @@ let postprocess = new ShaderMaterial({
             value: 0.0
         },
         tAudioData: {
-            value: new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )
+            value: new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat )
         }
     },
     vertexShader: require('./src/glsl/quad_vs.glsl'),
@@ -207,22 +213,23 @@ function raf(){
     agents.material.uniforms.data.value = trails.texture
     agents.render(renderer, time)
     //agents.material.uniforms.ra.value.needsUpdate = true;
-    //agents.material.uniforms.ra.value = (new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[0]/1
-    //agents.material.uniforms.sa.value = (new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[10]/10
-    //agents.material.uniforms.so.value = (new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[20]/1
-    agents.material.uniforms.ra.value = 60 + Math.min(Math.max(0,new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),60*0.25)
-    agents.material.uniforms.sa.value = 60 + Math.min(Math.max(0,new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),60*0.25)
-    agents.material.uniforms.ss.value = 2 + Math.min(Math.max(0,new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),10)
-    console.log((new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )).image.data[50]/1)
+    //agents.material.uniforms.ra.value = (new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat )).image.data[0]/1
+    //agents.material.uniforms.sa.value = (new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat )).image.data[10]/10
+    //agents.material.uniforms.so.value = (new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat )).image.data[20]/1
+    agents.material.uniforms.ra.value = 60 + Math.min(Math.max(0,new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),60*0.25)
+    //console.log(dameData());
+    //console.log(60 + Math.min(Math.max(0,new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),60*0.25));
+    agents.material.uniforms.sa.value = 60 + Math.min(Math.max(0,new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),60*0.25)
+    agents.material.uniforms.ss.value = 2 + Math.min(Math.max(0,new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat ).image.data[50]/5),10)
     render.render( renderer, time )
     
     postprocess_mesh.material.uniforms.data.value = render.texture
     postprocess_mesh.material.uniforms.time.value = time
 
-    analyser.getFrequencyData();
-    //console.log(new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat ).image.data)
+    //analyser.getFrequencyData();
+    //console.log(new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat ).image.data)
 
-    //postprocess_mesh.material.uniforms.tAudioData.value = new DataTexture( analyser.data, fftSize / 2, 1, LuminanceFormat )
+    //postprocess_mesh.material.uniforms.tAudioData.value = new DataTexture( dameData(), fftSize / 2, 1, LuminanceFormat )
     postprocess_mesh.material.uniforms.tAudioData.value.needsUpdate = true;
 
     renderer.setSize(w,h)
