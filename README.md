@@ -21,8 +21,5 @@ To use the mic check the branc "mic" of this repository, by default it loads thi
 
 ## Sample Images
 
-![img0](img/img0.png)
-![img1](img/img1.png)
-![img2](img/img2.png)
-![img3](img/img3.png)
-![img4](img/img4.png)
+![img0](img/physarum.jpg)
+![img1](img/physarum2.jpg)
