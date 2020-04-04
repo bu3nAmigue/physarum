@@ -1,9 +1,11 @@
 # Physarum Audio Reactive
 A slime mold simulation made by nicoptere and modified by bu3nAmigue for audio reactivity
 
-Inspired by this [amazing work ](https://www.sagejenson.com/physarum). Implemented from [this paper](http://eprints.uwe.ac.uk/15260/1/artl.2010.16.2.pdf)
+Inspired by this [amazing work](https://www.sagejenson.com/physarum). Implemented from [this paper](http://eprints.uwe.ac.uk/15260/1/artl.2010.16.2.pdf)
 
-You can check a sample of this audio reactive modification [here](https://www.instagram.com/p/B6ytj5rlUMf/?utm_source=ig_web_copy_link).
+You can check a sample of this [here](https://www.instagram.com/p/B6ytj5rlUMf/?utm_source=ig_web_copy_link).
+
+Run demo [here](https://physarum.mathigatti.com/).
 
 The model has these parameters:
 - SA and RA control the changes in direction ( Sensor Angle and Rotation Angle)
